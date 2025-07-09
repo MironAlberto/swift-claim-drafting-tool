@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,14 +23,17 @@ interface DraftGenerationProps {
   analysisData: AnalysisData;
   selectedTone: StakeholderTone;
   onDraftGenerated: (draft: string) => void;
+  editedContent?: string; // Contenuto modificato dall'editor
 }
 
 export const DraftGeneration: React.FC<DraftGenerationProps> = ({ 
   analysisData, 
   selectedTone, 
-  onDraftGenerated 
+  onDraftGenerated,
+  editedContent
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [originalDraft, setOriginalDraft] = useState<string>('');
   const [generatedDraft, setGeneratedDraft] = useState<string>('');
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export const DraftGeneration: React.FC<DraftGenerationProps> = ({
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const draft = generateDraftContent(analysisData, selectedTone);
+    setOriginalDraft(draft);
     setGeneratedDraft(draft);
     setIsGenerating(false);
     onDraftGenerated(draft);
@@ -143,11 +146,68 @@ Il presente rapporto fornisce una sintesi completa del caso e può essere utiliz
     return templates[tone.type] || templates.other;
   };
 
+  // Funzione per evidenziare le differenze
+  const highlightDifferences = (original: string, edited: string) => {
+    if (!edited || original === edited) {
+      return <pre className="whitespace-pre-wrap text-sm font-mono text-gray-800">{original}</pre>;
+    }
+
+    const originalLines = original.split('\n');
+    const editedLines = edited.split('\n');
+    const maxLines = Math.max(originalLines.length, editedLines.length);
+    
+    const result = [];
+    
+    for (let i = 0; i < maxLines; i++) {
+      const originalLine = originalLines[i] || '';
+      const editedLine = editedLines[i] || '';
+      
+      if (originalLine !== editedLine) {
+        if (originalLine && !editedLine) {
+          // Linea rimossa
+          result.push(
+            <div key={`removed-${i}`} className="bg-red-100 text-red-800 line-through">
+              {originalLine}
+            </div>
+          );
+        } else if (!originalLine && editedLine) {
+          // Linea aggiunta
+          result.push(
+            <div key={`added-${i}`} className="bg-red-100 text-red-600 font-medium">
+              {editedLine}
+            </div>
+          );
+        } else {
+          // Linea modificata
+          result.push(
+            <div key={`modified-${i}`} className="bg-red-100 text-red-600 font-medium">
+              {editedLine}
+            </div>
+          );
+        }
+      } else {
+        // Linea invariata
+        result.push(
+          <div key={`unchanged-${i}`} className="text-gray-800">
+            {originalLine}
+          </div>
+        );
+      }
+    }
+    
+    return <div className="text-sm font-mono">{result}</div>;
+  };
+
   return (
     <Card className="p-6">
       <div className="flex items-center space-x-3 mb-6">
         <Wand2 className="w-6 h-6 text-purple-600" />
         <h2 className="text-2xl font-bold text-slate-800">Generazione Bozza</h2>
+        {editedContent && editedContent !== originalDraft && (
+          <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">
+            Modifiche rilevate
+          </span>
+        )}
       </div>
 
       {isGenerating ? (
@@ -167,11 +227,18 @@ Il presente rapporto fornisce una sintesi completa del caso e può essere utiliz
 
           <div className="max-h-96 overflow-y-auto">
             <div className="p-4 bg-gray-50 rounded-lg border">
-              <pre className="whitespace-pre-wrap text-sm font-mono text-gray-800">
-                {generatedDraft}
-              </pre>
+              {highlightDifferences(originalDraft, editedContent || originalDraft)}
             </div>
           </div>
+
+          {editedContent && editedContent !== originalDraft && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Nota:</strong> Le modifiche apportate nell'editor sono evidenziate in rosso. 
+                Il contenuto originale rimane visibile per confronto.
+              </p>
+            </div>
+          )}
 
           <div className="flex justify-center">
             <Button onClick={generateDraft} variant="outline">

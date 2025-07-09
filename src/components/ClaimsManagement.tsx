@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { DocumentUpload } from './DocumentUpload';
 import { DocumentAnalysis } from './DocumentAnalysis';
@@ -149,6 +150,7 @@ export const ClaimsManagement = () => {
               analysisData={analysisData}
               selectedTone={selectedTone}
               onDraftGenerated={handleDraftGenerated}
+              editedContent={editedContent}
             />
           )}
           
