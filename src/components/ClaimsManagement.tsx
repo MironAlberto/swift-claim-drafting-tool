@@ -1,13 +1,13 @@
-
 import React, { useState } from 'react';
 import { DocumentUpload } from './DocumentUpload';
 import { DocumentAnalysis } from './DocumentAnalysis';
 import { DraftGeneration } from './DraftGeneration';
 import { TonePersonalization } from './TonePersonalization';
 import { InteractiveEditor } from './InteractiveEditor';
+import { ShareActions } from './ShareActions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Upload, Brain, Edit, Download } from 'lucide-react';
+import { FileText, Upload, Brain, Edit, Share2 } from 'lucide-react';
 
 interface UploadedFile {
   id: string;
@@ -167,27 +167,26 @@ export const ClaimsManagement = () => {
             onToneChange={handleToneChange}
           />
           
-          {currentStep === 'editing' && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Azioni</h3>
-              <div className="space-y-3">
-                <Button 
-                  onClick={handleExport} 
-                  className="w-full"
-                  size="lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Esporta PDF
-                </Button>
-                <Button 
-                  onClick={resetProcess} 
-                  variant="outline" 
-                  className="w-full"
-                >
-                  Nuovo Sinistro
-                </Button>
-              </div>
-            </Card>
+          {currentStep === 'editing' && editedContent && (
+            <>
+              <ShareActions 
+                content={editedContent}
+                title="Bozza Sinistro"
+              />
+              
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Altre Azioni</h3>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={resetProcess} 
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    Nuovo Sinistro
+                  </Button>
+                </div>
+              </Card>
+            </>
           )}
         </div>
       </div>
