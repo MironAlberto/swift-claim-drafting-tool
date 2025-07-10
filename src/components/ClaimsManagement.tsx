@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DocumentUpload } from './DocumentUpload';
 import { DocumentAnalysis } from './DocumentAnalysis';
@@ -97,7 +96,7 @@ export const ClaimsManagement = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-full mx-auto space-y-8">
       {/* Progress Steps */}
       <Card className="p-6">
         <div className="flex items-center justify-between">
@@ -130,10 +129,10 @@ export const ClaimsManagement = () => {
         </div>
       </Card>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Content - New Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
         {/* Left Column - Upload and Analysis */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-6">
           {currentStep === 'upload' && (
             <DocumentUpload onFilesUploaded={handleFilesUploaded} />
           )}
@@ -153,17 +152,22 @@ export const ClaimsManagement = () => {
               editedContent={editedContent}
             />
           )}
-          
+        </div>
+
+        {/* Center Column - Interactive Editor (moved before Draft) */}
+        <div className="xl:col-span-1 space-y-6">
           {currentStep === 'editing' && generatedDraft && (
-            <InteractiveEditor 
-              content={editedContent}
-              onContentChange={handleContentEdit}
-            />
+            <div className="h-full">
+              <InteractiveEditor 
+                content={editedContent}
+                onContentChange={handleContentEdit}
+              />
+            </div>
           )}
         </div>
 
         {/* Right Column - Settings and Actions */}
-        <div className="space-y-6">
+        <div className="xl:col-span-1 space-y-6">
           <TonePersonalization 
             selectedTone={selectedTone}
             onToneChange={handleToneChange}

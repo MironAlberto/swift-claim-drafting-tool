@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Image, FileCheck, X, Loader2 } from 'lucide-react';
+import { Upload, FileText, Image, FileCheck, X, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
 interface UploadedFile {
@@ -47,7 +47,6 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFilesUploaded 
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = () => {
-        // Simula il contenuto estratto dal file
         resolve(`Contenuto estratto da ${file.name}: ${getSimulatedContent(file.type)}`);
       };
       reader.readAsText(file);
@@ -81,9 +80,24 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFilesUploaded 
     onFilesUploaded(updatedFiles);
   };
 
+  const replaceAllFiles = () => {
+    setFiles([]);
+    onFilesUploaded([]);
+  };
+
   const getFileIcon = (type: string) => {
-    if (type.includes('image')) return <Image className="w-5 h-5" />;
-    return <FileText className="w-5 h-5" />;
+    if (type.includes('image')) return <Image className="w-5 h-5 text-blue-600" />;
+    if (type.includes('pdf')) return <FileText className="w-5 h-5 text-red-600" />;
+    if (type.includes('word')) return <FileText className="w-5 h-5 text-blue-800" />;
+    return <FileText className="w-5 h-5 text-gray-600" />;
+  };
+
+  const getFileTypeLabel = (type: string) => {
+    if (type.includes('image')) return 'Immagine';
+    if (type.includes('pdf')) return 'PDF';
+    if (type.includes('word')) return 'Word';
+    if (type.includes('text')) return 'Testo';
+    return 'Documento';
   };
 
   const formatFileSize = (bytes: number) => {
@@ -141,26 +155,56 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFilesUploaded 
         </div>
 
         {files.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center">
-              <FileCheck className="w-5 h-5 mr-2 text-green-600" />
-              Documenti Caricati ({files.length})
-            </h3>
-            <div className="space-y-3">
+          <div className="mt-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold flex items-center">
+                <FileCheck className="w-5 h-5 mr-2 text-green-600" />
+                Documenti Caricati ({files.length})
+              </h3>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.querySelector('input[type="file"]')?.click()}
+                  className="flex items-center"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Aggiungi Altri
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={replaceAllFiles}
+                  className="flex items-center text-orange-600 hover:text-orange-700"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Sostituisci Tutti
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-4">
               {files.map((file) => (
-                <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
+                <div key={file.id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center space-x-4">
                     {getFileIcon(file.type)}
-                    <div>
-                      <p className="font-medium text-sm">{file.name}</p>
-                      <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 truncate max-w-xs">
+                        {file.name}
+                      </h4>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                        <span className="bg-gray-100 px-2 py-1 rounded text-xs font-medium">
+                          {getFileTypeLabel(file.type)}
+                        </span>
+                        <span>{formatFileSize(file.size)}</span>
+                      </div>
                     </div>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => removeFile(file.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
                     <X className="w-4 h-4" />
                   </Button>
