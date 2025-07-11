@@ -85,6 +85,21 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFilesUploaded 
     onFilesUploaded([]);
   };
 
+  const handleAddMoreFiles = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.accept = '.pdf,.doc,.docx,.txt,.png,.jpg,.jpeg';
+    fileInput.onchange = (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.files) {
+        const fileArray = Array.from(target.files);
+        onDrop(fileArray);
+      }
+    };
+    fileInput.click();
+  };
+
   const getFileIcon = (type: string) => {
     if (type.includes('image')) return <Image className="w-5 h-5 text-blue-600" />;
     if (type.includes('pdf')) return <FileText className="w-5 h-5 text-red-600" />;
@@ -165,7 +180,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFilesUploaded 
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => document.querySelector('input[type="file"]')?.click()}
+                  onClick={handleAddMoreFiles}
                   className="flex items-center"
                 >
                   <Plus className="w-4 h-4 mr-2" />
