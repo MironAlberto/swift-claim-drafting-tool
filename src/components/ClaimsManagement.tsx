@@ -35,7 +35,7 @@ interface StakeholderTone {
 }
 
 export const ClaimsManagement = () => {
-  const [currentStep, setCurrentStep] = useState<'upload' | 'analysis' | 'generation' | 'editing'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'analysis' | 'generation' | 'editing' | 'sharing'>('upload');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [selectedTone, setSelectedTone] = useState<StakeholderTone>({ type: 'insurance', label: 'Compagnia Assicurativa' });
@@ -46,7 +46,8 @@ export const ClaimsManagement = () => {
     { id: 'upload', label: 'Caricamento', icon: Upload, completed: uploadedFiles.length > 0 },
     { id: 'analysis', label: 'Analisi', icon: Brain, completed: analysisData !== null },
     { id: 'generation', label: 'Generazione', icon: FileText, completed: generatedDraft !== '' },
-    { id: 'editing', label: 'Modifica', icon: Edit, completed: editedContent !== '' }
+    { id: 'editing', label: 'Modifica', icon: Edit, completed: editedContent !== '' },
+    { id: 'sharing', label: 'Tono & Condivisione', icon: Share2, completed: false }
   ];
 
   const handleFilesUploaded = (files: UploadedFile[]) => {
@@ -77,11 +78,15 @@ export const ClaimsManagement = () => {
       setCurrentStep('generation');
     } else if (currentStep === 'generation' && generatedDraft) {
       setCurrentStep('editing');
+    } else if (currentStep === 'editing' && editedContent) {
+      setCurrentStep('sharing');
     }
   };
 
   const goToPreviousStep = () => {
-    if (currentStep === 'editing') {
+    if (currentStep === 'sharing') {
+      setCurrentStep('editing');
+    } else if (currentStep === 'editing') {
       setCurrentStep('generation');
     } else if (currentStep === 'generation') {
       setCurrentStep('analysis');
@@ -103,7 +108,8 @@ export const ClaimsManagement = () => {
       case 'upload': return uploadedFiles.length > 0;
       case 'analysis': return analysisData !== null;
       case 'generation': return generatedDraft !== '';
-      case 'editing': return true;
+      case 'editing': return editedContent !== '';
+      case 'sharing': return false;
       default: return false;
     }
   };
@@ -173,31 +179,36 @@ export const ClaimsManagement = () => {
         )}
 
         {currentStep === 'generation' && analysisData && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <DraftGeneration 
-                analysisData={analysisData}
-                selectedTone={selectedTone}
-                onDraftGenerated={handleDraftGenerated}
-                editedContent={editedContent}
-              />
-            </div>
-            <div className="lg:col-span-1">
-              <TonePersonalization 
-                selectedTone={selectedTone}
-                onToneChange={handleToneChange}
-              />
-            </div>
+          <div className="space-y-6">
+            <DraftGeneration 
+              analysisData={analysisData}
+              selectedTone={selectedTone}
+              onDraftGenerated={handleDraftGenerated}
+              editedContent={editedContent}
+            />
           </div>
         )}
 
         {currentStep === 'editing' && generatedDraft && (
+          <div className="space-y-6">
+            <InteractiveEditor 
+              content={editedContent}
+              onContentChange={handleContentEdit}
+            />
+          </div>
+        )}
+
+        {currentStep === 'sharing' && editedContent && (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div className="xl:col-span-2">
-              <InteractiveEditor 
-                content={editedContent}
-                onContentChange={handleContentEdit}
-              />
+              <Card className="p-6">
+                <h2 className="text-2xl font-semibold mb-4">Anteprima Finale</h2>
+                <div className="prose max-w-none bg-gray-50 p-6 rounded-lg">
+                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+                    {editedContent}
+                  </pre>
+                </div>
+              </Card>
             </div>
             <div className="xl:col-span-1 space-y-6">
               <TonePersonalization 
@@ -248,16 +259,17 @@ export const ClaimsManagement = () => {
 
           <Button 
             onClick={goToNextStep}
-            disabled={!canProceed() || currentStep === 'editing'}
+            disabled={!canProceed() || currentStep === 'sharing'}
             className="flex items-center space-x-2"
           >
             <span>
               {currentStep === 'upload' && 'Procedi all\'Analisi'}
               {currentStep === 'analysis' && 'Procedi alla Generazione'}
               {currentStep === 'generation' && 'Procedi alla Modifica'}
-              {currentStep === 'editing' && 'Completato'}
+              {currentStep === 'editing' && 'Procedi alla Condivisione'}
+              {currentStep === 'sharing' && 'Completato'}
             </span>
-            {currentStep !== 'editing' && <ChevronRight className="w-4 h-4" />}
+            {currentStep !== 'sharing' && <ChevronRight className="w-4 h-4" />}
           </Button>
         </div>
       </Card>
