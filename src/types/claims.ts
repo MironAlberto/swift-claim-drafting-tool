@@ -8,9 +8,11 @@ export interface UploadedFile {
 
 export interface AnalysisData {
   personalData: {
-    name: string;
+    firstName: string;
+    lastName: string;
     policyNumber: string;
-    date: string;
+    claimDate: string;
+    openingDate: string;
   };
   claimDescription: string;
   legalFramework: string;

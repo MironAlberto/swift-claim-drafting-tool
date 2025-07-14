@@ -2,22 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Wand2, CheckCircle, Loader2 } from 'lucide-react';
-
-interface AnalysisData {
-  personalData: {
-    name: string;
-    policyNumber: string;
-    date: string;
-  };
-  claimDescription: string;
-  legalFramework: string;
-  estimatedCompensation: string;
-}
-
-interface StakeholderTone {
-  type: 'insurance' | 'liquidator' | 'client' | 'other';
-  label: string;
-}
+import type { AnalysisData, StakeholderTone } from '@/types/claims';
 
 interface DraftGenerationProps {
   analysisData: AnalysisData;
@@ -59,9 +44,10 @@ export const DraftGeneration: React.FC<DraftGenerationProps> = ({
 RELAZIONE SINISTRO - COMPAGNIA ASSICURATIVA
 
 1. DATI IDENTIFICATIVI DEL CONTRATTO
-- Contraente: ${data.personalData.name}
+- Contraente: ${data.personalData.firstName} ${data.personalData.lastName}
 - Numero Polizza: ${data.personalData.policyNumber}
-- Data Sinistro: ${data.personalData.date}
+- Data Sinistro: ${data.personalData.claimDate}
+- Data Apertura Sinistro: ${data.personalData.openingDate}
 
 2. RICOSTRUZIONE DELL'EVENTO
 ${data.claimDescription}
@@ -81,9 +67,10 @@ Allegati: Documentazione fotografica, verbali, certificazioni mediche.
 PERIZIA TECNICA - LIQUIDAZIONE SINISTRO
 
 DATI TECNICI:
-• Assicurato: ${data.personalData.name}
+• Assicurato: ${data.personalData.firstName} ${data.personalData.lastName}
 • Polizza n.: ${data.personalData.policyNumber}
-• Evento: ${data.personalData.date}
+• Evento: ${data.personalData.claimDate}
+• Apertura: ${data.personalData.openingDate}
 
 MODALITÀ DEL SINISTRO:
 ${data.claimDescription}
@@ -104,9 +91,9 @@ RACCOMANDAZIONI:
 Si consiglia liquidazione secondo stima, previa verifica documentale completa.
       `,
       client: `
-Gentile ${data.personalData.name},
+Gentile ${data.personalData.firstName} ${data.personalData.lastName},
 
-La informiamo che abbiamo ricevuto e analizzato la documentazione relativa al sinistro del ${data.personalData.date} riguardante la Sua polizza n. ${data.personalData.policyNumber}.
+La informiamo che abbiamo ricevuto e analizzato la documentazione relativa al sinistro del ${data.personalData.claimDate} riguardante la Sua polizza n. ${data.personalData.policyNumber}.
 
 COSA È SUCCESSO:
 ${data.claimDescription}
@@ -126,9 +113,10 @@ Ufficio Sinistri
       other: `
 RAPPORTO SINISTRO
 
-Intestatario: ${data.personalData.name}
+Intestatario: ${data.personalData.firstName} ${data.personalData.lastName}
 Polizza: ${data.personalData.policyNumber}
-Data: ${data.personalData.date}
+Data Sinistro: ${data.personalData.claimDate}
+Data Apertura: ${data.personalData.openingDate}
 
 DESCRIZIONE DELL'EVENTO:
 ${data.claimDescription}

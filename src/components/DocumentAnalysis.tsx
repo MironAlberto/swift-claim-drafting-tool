@@ -3,25 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, CheckCircle, Loader2, FileText } from 'lucide-react';
-
-interface UploadedFile {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  content?: string;
-}
-
-interface AnalysisData {
-  personalData: {
-    name: string;
-    policyNumber: string;
-    date: string;
-  };
-  claimDescription: string;
-  legalFramework: string;
-  estimatedCompensation: string;
-}
+import type { UploadedFile, AnalysisData } from '@/types/claims';
 
 interface DocumentAnalysisProps {
   files: UploadedFile[];
@@ -58,22 +40,34 @@ export const DocumentAnalysis: React.FC<DocumentAnalysisProps> = ({ files, onAna
     // Simula i dati estratti
     const simulatedData: AnalysisData = {
       personalData: {
-        name: 'Mario Rossi',
-        policyNumber: 'POL123456',
-        date: '15/01/2024'
+        firstName: 'Mario',
+        lastName: 'Rossi',
+        policyNumber: 'POL123456789',
+        claimDate: '15/01/2024',
+        openingDate: new Date().toLocaleDateString('it-IT')
       },
-      claimDescription: `Sinistro stradale avvenuto il 15 gennaio 2024 alle ore 14:30 in Via Roma, incrocio con Via Milano. 
-      Il veicolo assicurato (Fiat Punto, targa ABC123) ha subito un tamponamento da parte di un veicolo terzo. 
-      Danni riportati: ammaccatura portiera anteriore destra, rottura specchietto retrovisore destro, graffi sulla carrozzeria.`,
-      legalFramework: `Il sinistro rientra nella copertura RCA ai sensi degli artt. 2043 e 2054 del Codice Civile. 
-      Applicabile il Codice delle Assicurazioni Private (D.Lgs. 209/2005) e le disposizioni IVASS in materia di liquidazione sinistri. 
-      Responsabilità del conducente terzo accertata da verbale delle Forze dell'Ordine.`,
+      claimDescription: `Sinistro stradale - Tamponamento tra due veicoli avvenuto in centro urbano con danni materiali. Il veicolo assicurato ha subito danni alla carrozzeria posteriore e necessita riparazioni per ripristinare le condizioni originali.`,
+      legalFramework: `Ramo: RC Auto (Responsabilità Civile Autoveicoli)
+
+Normativa Civile:
+- Art. 2043 C.C. (Risarcimento per fatto illecito)
+- Art. 2054 C.C. (Circolazione di veicoli)
+- Art. 1218 C.C. (Responsabilità del debitore)
+
+Normativa Assicurativa:
+- D.Lgs. 209/2005 (Codice delle Assicurazioni Private)
+- Art. 148-152 CAP (Liquidazione sinistri RCA)
+- Regolamento IVASS n. 24/2016
+
+Normativa Generale:
+- D.Lgs. 285/1992 (Codice della Strada)
+- Art. 193-196 CdS (Obblighi in caso di incidente)`,
       estimatedCompensation: `Stima preliminare danni materiali: €2.800
-      - Riparazione carrozzeria: €2.200
-      - Sostituzione specchietto: €180
-      - Verniciatura: €420
-      
-      Eventuale risarcimento danni fisici da valutare in base a certificazione medica.`
+- Riparazione carrozzeria: €2.200
+- Sostituzione specchietto: €180
+- Verniciatura: €420
+
+Eventuale risarcimento danni fisici da valutare in base a certificazione medica.`
     };
 
     setAnalysisData(simulatedData);
@@ -124,9 +118,11 @@ export const DocumentAnalysis: React.FC<DocumentAnalysisProps> = ({ files, onAna
                   Dati Anagrafici
                 </h3>
                 <div className="space-y-1 text-sm">
-                  <p><span className="font-medium">Nome:</span> {analysisData.personalData.name}</p>
-                  <p><span className="font-medium">Polizza:</span> {analysisData.personalData.policyNumber}</p>
-                  <p><span className="font-medium">Data:</span> {analysisData.personalData.date}</p>
+                  <p><span className="font-medium">Nome:</span> {analysisData.personalData.firstName}</p>
+                  <p><span className="font-medium">Cognome:</span> {analysisData.personalData.lastName}</p>
+                  <p><span className="font-medium">N. Polizza:</span> {analysisData.personalData.policyNumber}</p>
+                  <p><span className="font-medium">Data del sinistro:</span> {analysisData.personalData.claimDate}</p>
+                  <p><span className="font-medium">Data apertura sinistro:</span> {analysisData.personalData.openingDate}</p>
                 </div>
               </div>
 
