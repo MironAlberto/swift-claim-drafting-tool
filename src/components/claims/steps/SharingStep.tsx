@@ -10,14 +10,22 @@ interface SharingStepProps {
   selectedTone: StakeholderTone;
   onToneChange: (tone: StakeholderTone) => void;
   onResetProcess: () => void;
+  onRegenerateDraft?: (tone: StakeholderTone) => void;
 }
 
 export const SharingStep: React.FC<SharingStepProps> = ({
   editedContent,
   selectedTone,
   onToneChange,
-  onResetProcess
+  onResetProcess,
+  onRegenerateDraft
 }) => {
+  const handleToneChange = (tone: StakeholderTone) => {
+    onToneChange(tone);
+    if (onRegenerateDraft) {
+      onRegenerateDraft(tone);
+    }
+  };
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
       <div className="xl:col-span-2">
@@ -33,7 +41,7 @@ export const SharingStep: React.FC<SharingStepProps> = ({
       <div className="xl:col-span-1 space-y-6">
         <TonePersonalization 
           selectedTone={selectedTone}
-          onToneChange={onToneChange}
+          onToneChange={handleToneChange}
         />
         
         <ShareActions 

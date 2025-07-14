@@ -25,8 +25,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
     switch (currentStep) {
       case 'upload': return 'Procedi all\'Analisi';
       case 'analysis': return 'Procedi alla Generazione';
-      case 'generation': return 'Procedi alla Modifica';
-      case 'editing': return 'Procedi alla Condivisione';
+      case 'generation': return 'Procedi alla Condivisione';
       case 'sharing': return 'Completato';
       default: return 'Avanti';
     }

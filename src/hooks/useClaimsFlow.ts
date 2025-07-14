@@ -16,8 +16,7 @@ export const useClaimsFlow = () => {
   const steps = [
     { id: 'upload' as const, label: 'Caricamento', icon: Upload, completed: uploadedFiles.length > 0 },
     { id: 'analysis' as const, label: 'Analisi', icon: Brain, completed: analysisData !== null },
-    { id: 'generation' as const, label: 'Generazione', icon: FileText, completed: generatedDraft !== '' },
-    { id: 'editing' as const, label: 'Modifica', icon: Edit, completed: editedContent !== '' },
+    { id: 'generation' as const, label: 'Bozza & Modifica', icon: FileText, completed: generatedDraft !== '' },
     { id: 'sharing' as const, label: 'Tono & Condivisione', icon: Share2, completed: false }
   ];
 
@@ -38,6 +37,12 @@ export const useClaimsFlow = () => {
     setSelectedTone(tone);
   };
 
+  const handleRegenerateDraft = (tone: StakeholderTone) => {
+    setSelectedTone(tone);
+    // Forza la rigenerazione andando indietro al step di generazione
+    setCurrentStep('generation');
+  };
+
   const handleContentEdit = (content: string) => {
     setEditedContent(content);
   };
@@ -48,16 +53,12 @@ export const useClaimsFlow = () => {
     } else if (currentStep === 'analysis' && analysisData) {
       setCurrentStep('generation');
     } else if (currentStep === 'generation' && generatedDraft) {
-      setCurrentStep('editing');
-    } else if (currentStep === 'editing' && editedContent) {
       setCurrentStep('sharing');
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep === 'sharing') {
-      setCurrentStep('editing');
-    } else if (currentStep === 'editing') {
       setCurrentStep('generation');
     } else if (currentStep === 'generation') {
       setCurrentStep('analysis');
@@ -79,7 +80,6 @@ export const useClaimsFlow = () => {
       case 'upload': return uploadedFiles.length > 0;
       case 'analysis': return analysisData !== null;
       case 'generation': return generatedDraft !== '';
-      case 'editing': return editedContent !== '';
       case 'sharing': return false;
       default: return false;
     }
@@ -106,6 +106,7 @@ export const useClaimsFlow = () => {
     handleDraftGenerated,
     handleToneChange,
     handleContentEdit,
+    handleRegenerateDraft,
     goToNextStep,
     goToPreviousStep,
     resetProcess,

@@ -5,7 +5,7 @@ import { NavigationControls } from '@/components/claims/NavigationControls';
 import { UploadStep } from '@/components/claims/steps/UploadStep';
 import { AnalysisStep } from '@/components/claims/steps/AnalysisStep';
 import { GenerationStep } from '@/components/claims/steps/GenerationStep';
-import { EditingStep } from '@/components/claims/steps/EditingStep';
+
 import { SharingStep } from '@/components/claims/steps/SharingStep';
 
 export const ClaimsManagement = () => {
@@ -23,6 +23,7 @@ export const ClaimsManagement = () => {
     handleDraftGenerated,
     handleToneChange,
     handleContentEdit,
+    handleRegenerateDraft,
     goToNextStep,
     goToPreviousStep,
     resetProcess,
@@ -52,14 +53,6 @@ export const ClaimsManagement = () => {
             selectedTone={selectedTone}
             editedContent={editedContent}
             onDraftGenerated={handleDraftGenerated}
-          />
-        );
-      
-      case 'editing':
-        if (!generatedDraft) return null;
-        return (
-          <EditingStep
-            content={editedContent}
             onContentChange={handleContentEdit}
           />
         );
@@ -72,6 +65,7 @@ export const ClaimsManagement = () => {
             selectedTone={selectedTone}
             onToneChange={handleToneChange}
             onResetProcess={resetProcess}
+            onRegenerateDraft={handleRegenerateDraft}
           />
         );
       

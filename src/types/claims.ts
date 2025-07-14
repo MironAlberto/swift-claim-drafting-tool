@@ -22,4 +22,4 @@ export interface StakeholderTone {
   label: string;
 }
 
-export type ClaimStep = 'upload' | 'analysis' | 'generation' | 'editing' | 'sharing';
+export type ClaimStep = 'upload' | 'analysis' | 'generation' | 'sharing';
